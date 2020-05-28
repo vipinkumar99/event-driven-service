@@ -1,16 +1,30 @@
+server:  
+  port: ${PORT:2223}
+
 spring:
-  cloud:
+   datasource:
+    url: jdbc:mysql://localhost:3306/eventservice?createDatabaseIfNotExist=true
+    username: root
+    password: root
+   jpa:
+    hibernate:
+      ddl-auto: update
+      naming:
+       physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    show-sql: true   
+    
+   cloud:
     stream:
       bindings:
         input:
-          destination: ex.stream.out
-          group: product
-          binder: rabbit1
+          destination: order-output
+          group: product-group
+          binder: rabbitbinder
         output:
-          destination: ex.stream.out2
-          binder: rabbit1
+          destination: order-product-output
+          binder: rabbitbinder
       binders:
-        rabbit1:
+        rabbitbinder:
           type: rabbit
           environment:
             spring:
@@ -20,5 +34,3 @@ spring:
                 username: guest
                 password: guest
                 
-server:  
-  port: ${PORT:2223}
