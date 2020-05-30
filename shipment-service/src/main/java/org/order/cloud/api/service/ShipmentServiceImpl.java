@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.order.cloud.api.convertor.ShipmentConvertor;
 import org.order.cloud.api.dao.ShipmentDao;
+import org.order.cloud.api.dao.ShipmentHistoryDao;
 import org.order.cloud.api.entity.Shipment;
 import org.order.cloud.enums.ShipmentStatus;
 import org.order.cloud.pojo.MessageData;
@@ -19,6 +20,8 @@ public class ShipmentServiceImpl implements ShipmentService {
 
 	@Autowired
 	private ShipmentDao shipmentDao;
+	@Autowired
+	private ShipmentHistoryDao shipmentHistoryDao;
 
 	@Override
 	public ShipmentResponse save(ShipmentPojo request) {
@@ -66,6 +69,7 @@ public class ShipmentServiceImpl implements ShipmentService {
 				message.setShipmentTaxAmount(shipment.getTaxAmount());
 				message.setShipmentTotalAmount(shipment.getTotalAmount());
 				message.setShipmentTotalAmount(shipment.getDiscountAmount());
+				shipmentHistoryDao.save(ShipmentConvertor.of(message, shipment));
 			}
 		}
 	}

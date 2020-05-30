@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.order.cloud.api.convertor.ProductConvertor;
 import org.order.cloud.api.dao.ProductDao;
+import org.order.cloud.api.dao.ProductHistoryDao;
 import org.order.cloud.api.entity.Product;
 import org.order.cloud.enums.ProductStockStatus;
 import org.order.cloud.pojo.MessageData;
@@ -19,6 +20,8 @@ public class ProductServiceImpl implements ProductService {
 
 	@Autowired
 	private ProductDao productDao;
+	@Autowired
+	private ProductHistoryDao productHistoryDao;
 
 	@Override
 	public ProductResponse save(ProductPojo request) {
@@ -66,6 +69,7 @@ public class ProductServiceImpl implements ProductService {
 				message.setProductTaxAmount(product.getTaxAmount());
 				message.setProductTotalAmount(product.getTotalAmount());
 				message.setProductDiscountAmount(product.getDiscountAmount());
+				productHistoryDao.save(ProductConvertor.of(message, product));
 			}
 		}
 	}

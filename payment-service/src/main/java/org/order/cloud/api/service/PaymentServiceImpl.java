@@ -5,6 +5,7 @@ import org.order.cloud.api.dao.PaymentDao;
 import org.order.cloud.api.entity.Payment;
 import org.order.cloud.enums.OrderStatus;
 import org.order.cloud.pojo.MessageData;
+import org.order.cloud.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -23,7 +24,7 @@ public class PaymentServiceImpl implements PaymentService {
 		if (message != null) {
 			Payment payment = PaymentConvertor.getEntity();
 			payment.setOrderId(message.getOrderId());
-			payment.setPaymentLastDate(message.getCreated());
+			payment.setPaymentLastDate(DateUtil.modifyDate(message.getCreated(), 0, 0, 1));
 			payment.setProductId(message.getProductId());
 			payment.setShipmentId(message.getShipmentId());
 			if (message.getProductTaxAmount() != null) {

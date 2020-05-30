@@ -7,24 +7,30 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @JsonInclude(value = Include.NON_NULL)
-public class PaymentResponse {
+public class ShipmentHistoryResponse {
 	private Long id;
-	private Long productId;
-	private Long shipmentId;
 	private Long orderId;
-	private Double totalTaxAmount;
+	private Long shipmentId;
+	private String name;
+	private Double taxAmount;
 	private Double totalAmount;
-	private Double totalDiscountAmount;
-	private Double totalAmountToPay;
+	private Double discountAmount;
+	private Integer quantity;
+	private String status;
+	@JsonFormat(shape = Shape.STRING, pattern = "dd-MM-yyyy", timezone = "IST")
+	private Date shipmentDate;
+	@JsonFormat(shape = Shape.STRING, pattern = "hh:mm:ss", timezone = "IST")
+	private Date shipmentTime;
 	@JsonFormat(shape = Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss", timezone = "IST")
 	private Date created;
-	@JsonFormat(shape = Shape.STRING, pattern = "dd-MM-yyyy", timezone = "IST")
-	private Date paymentLastDate;
-	private String paymentStatus;
 }

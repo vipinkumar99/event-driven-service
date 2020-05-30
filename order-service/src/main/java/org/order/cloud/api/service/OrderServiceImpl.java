@@ -8,6 +8,9 @@ import org.order.cloud.api.config.MessageSender;
 import org.order.cloud.api.entity.Order;
 import org.order.cloud.api.mapper.OrderMapper;
 import org.order.cloud.api.repository.OrderDao;
+import org.order.cloud.api.repository.PaymentDao;
+import org.order.cloud.api.repository.ProductHistoryDao;
+import org.order.cloud.api.repository.ShipmentHistoryDao;
 import org.order.cloud.pojo.MessageData;
 import org.order.cloud.pojo.OrderPojo;
 import org.order.cloud.response.OrderResponse;
@@ -20,6 +23,12 @@ public class OrderServiceImpl implements OrderService {
 	private OrderDao orderDao;
 	@Autowired
 	private MessageSender messageSender;
+	@Autowired
+	private ProductHistoryDao productHistoryDao;
+	@Autowired
+	private ShipmentHistoryDao shipmentHistoryDao;
+	@Autowired
+	private PaymentDao paymentDao;
 
 	@Override
 	public OrderResponse save(OrderPojo request) {
@@ -34,20 +43,12 @@ public class OrderServiceImpl implements OrderService {
 
 	@Override
 	public OrderResponse getById(Long id) {
-		return OrderMapper.of(orderDao.findById(id).orElse(null));
+		return getResponse(orderDao.findById(id).orElse(null));
 	}
 
 	@Override
 	public List<OrderResponse> getAll() {
-		Iterable<Order> all = orderDao.findAll();
-		if (all == null) {
-			return null;
-		}
-		List<OrderResponse> res = new ArrayList<>();
-		for (Order order : all) {
-			res.add(OrderMapper.of(order));
-		}
-		return res;
+		return getResponseList(orderDao.findAll());
 	}
 
 	@Override
@@ -63,6 +64,27 @@ public class OrderServiceImpl implements OrderService {
 				orderDao.save(order);
 			}
 		}
+	}
+
+	private List<OrderResponse> getResponseList(Iterable<Order> entities) {
+		if (entities == null) {
+			return new ArrayList<>();
+		}
+		List<OrderResponse> responseList = new ArrayList<>();
+		for (Order order : entities) {
+			responseList.add(getResponse(order));
+		}
+		return responseList;
+	}
+
+	private OrderResponse getResponse(Order entity) {
+		OrderResponse response = OrderMapper.getResponse(orderDao.save(entity));
+		if (response != null) {
+			response.setPaymentDetails(OrderMapper.of(paymentDao.find(entity.getId())));
+			response.setShipmentDetails(OrderMapper.of(shipmentHistoryDao.find(entity.getId())));
+			response.setProductDetails(OrderMapper.of(productHistoryDao.findOrder(entity.getId())));
+		}
+		return response;
 	}
 
 }
